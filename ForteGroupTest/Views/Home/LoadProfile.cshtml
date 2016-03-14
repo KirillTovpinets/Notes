@@ -12,15 +12,19 @@
             autoOpen: true,
             buttons: [
                 { text: "OK", click: Confirm },
-                { text: "Cansel", click: function () { $("#dialog").dialog("close"); } }
+                { text: "Canсel", click: function () { $("#dialog").dialog("close"); } }
             ]
         });
-
+        
+        $("#close-btn").click(function () {
+            $("EditNoteUser-form").hide();
+        })
         function Confirm() {
             $.ajax({
                 type: "POST",
-                url: "~/Home/ConfirmDelete",
-                success: function () {
+                url: "/Home/ConfirmDelete",
+                success: function (data) {
+                    $("#dialog").dialog("close");
                     $("<div id='success' title='Sucess'>The note was successfuly deleted from the system</div>").appendTo(".content");
                     $("#success").dialog({
                         modal: true,
@@ -41,13 +45,14 @@
     });
 </script>
 <div class="content">
-    @foreach (ForteGroupTest.Models.Records item in dc.Records)
+    @foreach (ForteGroupTest.Models.Records item in dc.Records.OrderByDescending(a => a.RecordId))
     {
         if (item.AuthorId == Convert.ToInt32(Session["LogedUserId"]) && 
             item.isRemoved != 1)
         {
             hasNote = true;
             <div class="record">
+                <input type="hidden" value="@item.RecordId" />
                 <a href="~/Home/DeleteNoteUser?id=@item.RecordId">
                     <img src="@Url.Content("~/Content/delete.png")" width="20" height="20" style="float:left; margin-right:10px;" />
                 </a>
@@ -71,6 +76,24 @@
             <p>Administrators of the system decided to delete some of your notes. They are the following:</p>
             @ViewBag.Message
             Do you agree to delete these notes?
+        </div>
+    }
+    
+    @if (ViewBag.Edit != null)
+    {
+        <div>
+            @using (Html.BeginForm("EditNoteUser", "Home", FormMethod.Post, new { @id = "EditNoteUser-form" }))
+            {
+                int id = ViewBag.NoteId;
+                var EditRec = dc.Records.Where(a => a.RecordId.Equals(id)).FirstOrDefault();
+                <div id="Edit">
+                    <h2>Edit note</h2>
+                    @Html.TextArea("Content", EditRec.Content, new { cols = "60" })<br />
+                    <input type="hidden" name="RecordId" value="@EditRec.RecordId" />
+                    <input type="submit" value="Save" />
+                    <input type="button" value="Cancel" id="close-btn"/>
+                </div>
+            }
         </div>
     }
 </div>

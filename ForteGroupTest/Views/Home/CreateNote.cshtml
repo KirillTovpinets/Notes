@@ -32,7 +32,7 @@
         <h2>Create a new note</h2>
         @Html.TextAreaFor(a => a.Content, new { cols = "80", rows = "5" })
         @Html.ValidationMessageFor(a => a.Content)<br />
-        <span name="Date">@DateTime.Now.ToShortDateString()</span><br />
+        <span name="Date" style="float:right; margin-right:120px;">@DateTime.Now.ToShortDateString()</span><br />
         <input type="submit" value="Save" />
     }
 </div>

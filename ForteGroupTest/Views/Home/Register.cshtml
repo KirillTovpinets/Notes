@@ -41,8 +41,13 @@
             });
         });
     </script>
+    <header>
+        <div class="title">
+            Your personal note helper
+        </div>
+    </header>
     <nav class="header">
-        <div class="header-content"> Регистрация</div>
+        <div class="header-content">Registration</div>
     </nav>
     @using (Html.BeginForm("Register", "Home", FormMethod.Post, new { id = "register-form" }))
     {
@@ -60,8 +65,8 @@
                 <td style="color:red;">@Html.ValidationMessageFor(a => a.Login)</td>
             </tr>
             <tr>
-                <td><div id="key">*Key:</div></td>
-                <td>@Html.PasswordFor(a => a.AdminKey)</td>
+                <td><div>Key:</div></td>
+                <td>@Html.PasswordFor(a => a.AdminKey, new { @placeholder = "Only for administrators"})</td>
                 <td>@Html.ValidationMessageFor(a => a.AdminKey)</td>
             </tr>
             <tr>
@@ -90,9 +95,6 @@
                 <td style="color:red;">@Html.ValidationMessageFor(a => a.Patername)</td>
             </tr>
         </table>
-        <div id="key-info">
-            If you are not an admin of the system simply keep this field empty
-        </div>
         <div style="margin-top:10px;">
             <img src="@Url.Action("Captcha","Home")" /><br />
             @Html.TextBoxFor(a => a.Captcha, new { @placeholder = "Enter a number from captcha" })

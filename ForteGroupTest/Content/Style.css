@@ -338,11 +338,18 @@ textarea{
 }
 .record{
     position:relative;
+    border-bottom: 1px solid #ccc;
+    padding:15px;
 }
 .record:after{
     display:table;
     clear:both;
     content: '';
+}
+
+.record .date{
+    display:block;
+    float:right;
 }
 #EditNoteUser-form{
     background-color:#000;
@@ -640,8 +647,7 @@ body .choose-form .choose-buttons:hover{
     left:-7px;
 }
 .student:hover ~ .info,
-.Warning:hover ~ .Warning-info,
-#key:hover ~ #key-info{
+.Warning:hover ~ .Warning-info{
     opacity:1;
     transform: translateY(-35px);
     -webkit-transform: translateY(-20px);
@@ -649,13 +655,11 @@ body .choose-form .choose-buttons:hover{
     -o-transform: translateY(-20px);
 }
 .student:hover,
-.Warning:hover,
-#key:hover{
+.Warning:hover{
     cursor:pointer;
 }
 .info,
-.Warning-info,
-#key-info{
+.Warning-info{
     opacity:0;
     position:absolute;
     padding:5px;
@@ -674,13 +678,8 @@ body .choose-form .choose-buttons:hover{
     top:50px;
     left:5px;
 }
-#key-info{
-    left: 400px;
-    top:135px;
-}
 .info:before,
-.Warning-info:before,
-#key-info:before{
+.Warning-info:before{
     z-index:-1;
     content: '';
     color:#203939;

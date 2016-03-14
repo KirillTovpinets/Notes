@@ -163,6 +163,7 @@
     <Content Include="Content\delete.png" />
     <Content Include="Content\deleted.png" />
     <Content Include="Content\editxl.png" />
+    <Content Include="Content\refresh.png" />
     <Content Include="Content\Style.css" />
     <Content Include="Content\StylesUi\images\ui-bg_diagonals-medium_20_d34d17_40x40.png" />
     <Content Include="Content\StylesUi\images\ui-bg_gloss-wave_45_817865_500x100.png" />

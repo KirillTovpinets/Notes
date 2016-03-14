@@ -24,6 +24,10 @@
                 }
             ]
         });
+
+        $("#close-edit-btn").click(function () {
+            $("#EditNoteUser-form").hide();
+        });
     })
 </script>
 <div class="content">
@@ -43,14 +47,22 @@
                     <a href="#">@item.Sirname @(item.Name.First()). @(item.Patername.First()).</a>
                 </h2>
                     <div id="user-@item.UserId">
-                        @foreach (ForteGroupTest.Models.Records rec in dc.Records)
+                        @foreach (ForteGroupTest.Models.Records rec in dc.Records.OrderByDescending(a => a.RecordId))
                         {
                             if(rec.AuthorId == item.UserId)
-                            { 
+                            {
+                                var confDelete = dc.Notifications.Where(a => a.RecId.Equals(rec.RecordId) &&
+                                                                             a.isRead.Equals(0)).FirstOrDefault();
+                                var confRejected = dc.Notifications.Where(a => a.RecId.Equals(rec.RecordId) &&
+                                                                             a.isRead.Equals(1)).FirstOrDefault();
+                                
                                 <div class="record">
                                     @if (rec.isRemoved == 1)
                                     {
                                         <img id="deleted-logo" src="@Url.Content("~/Content/deleted.png")" width="200" height="80"/>
+                                        <a href="~/Home/Restore?id=@rec.RecordId">
+                                            <img src="@Url.Content("~/Content/refresh.png")" width="20" height="20" style="float:left; margin-right:10px;" />
+                                        </a>
                                     }
                                     <a href="~/Home/DeleteNoteUser?id=@rec.RecordId">
                                         <img src="@Url.Content("~/Content/delete.png")" width="20" height="20" style="float:left; margin-right:10px;" />
@@ -60,12 +72,25 @@
                                     </a>
                                     <div class="text">@rec.Content</div>
                                     <div class="date">@rec.Date.ToShortDateString()</div>
+                                    @if(confDelete != null)
+                                    { 
+                                        <span style="font-size:10; font-style:italic; color:#333;">Is to be deleted</span>
+                                    }
+                                    @if (confRejected != null)
+                                    {
+                                        dc.Notifications.Remove(confRejected);
+                                        <span style="font-size:10; font-style:italic; color:#333;">Rejected</span>
+                                    }
                                 </div>
                             }
                         }
+                       
                    </div>
             }
-        }    
+        }
+        @{
+            dc.SaveChanges();
+        }
     </div>
     @if (ViewBag.Edit != null)
     {

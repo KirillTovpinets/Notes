@@ -55,11 +55,12 @@ namespace ForteGroupTest.Controllers
                     if (item.RecieverId == Convert.ToInt32(Session["LogedUserId"]) &&
                         item.isRead == 0)
                     {
+                        item.isRead = 1;
                         hasNotif = true;
                         SmessageHtml += "<li>" + item.Records.Content + "<div class='date'>" + item.Records.Date.ToShortDateString() + "</div></li>";
                     }
                 }
-
+                dc.SaveChanges();
                 SmessageHtml += "</ul>";
 
                 MvcHtmlString messageHtml = MvcHtmlString.Create(SmessageHtml);
@@ -143,7 +144,7 @@ namespace ForteGroupTest.Controllers
 
             dc.Records.Add(RecToSave);
             dc.SaveChanges();
-            ViewBag.Message = "Note have been saved successfuly";
+            ViewBag.Message = "The note has been saved successfuly";
             return View();
         }
 
@@ -167,7 +168,7 @@ namespace ForteGroupTest.Controllers
                     newNotif.RecId = RecId;
                     newNotif.RecieverId = RecToDelete.AuthorId;
                     dc.Notifications.Add(newNotif);
-                    ViewBag.Message = "The author of the note have been sent a notification." +
+                    ViewBag.Message = "The author of the note has been sent a notification." +
                         " The note will be deleted after the author's confirmation.";
                 }
                 dc.SaveChanges();
@@ -193,6 +194,16 @@ namespace ForteGroupTest.Controllers
             return View("LoadProfile");
         }
 
+        [HttpGet]
+        public ActionResult Restore()
+        {
+            int id = Convert.ToInt32(Request.QueryString["id"]);
+            ForteGroupTestEntities dc = new ForteGroupTestEntities();
+            var RefreshRec = dc.Records.Where(a => a.RecordId.Equals(id)).FirstOrDefault();
+            RefreshRec.isRemoved = 0;
+            dc.SaveChanges();
+            return View("Admin");
+        }
         [HttpPost]
         public ActionResult EditNoteUser(Records EditRec)
         {
@@ -215,10 +226,11 @@ namespace ForteGroupTest.Controllers
 
         [HttpPost]
         //Axaj function
-        public ActionResult ConfirmDelete()
+        public int[] ConfirmDelete()
         {
             ForteGroupTestEntities dc = new ForteGroupTestEntities();
-
+            int[] ids = new int[50];
+            int num = 0;
             foreach (Records item in dc.Records)
             {
                 if (item.AuthorId == Convert.ToInt32(Session["LogedUserId"]))
@@ -226,12 +238,15 @@ namespace ForteGroupTest.Controllers
                     var DelRec = dc.Notifications.Where(a => a.RecId.Equals(item.RecordId)).FirstOrDefault();
                     if (DelRec != null)
                     {
+                        ids[num++] = DelRec.RecId;
                         dc.Notifications.Remove(DelRec);
                         dc.Records.Remove(item);
                     }
                 }
             }
-            return View("LoadProfile");
+            dc.SaveChanges();
+            ViewBag.Message = null;
+            return ids;
         }
     }
 }
