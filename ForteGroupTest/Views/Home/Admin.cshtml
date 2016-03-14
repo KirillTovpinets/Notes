@@ -1,0 +1,90 @@
+﻿@{
+    ViewBag.Title = "Admin";
+    Layout = "~/Views/Shared/Layout.cshtml";
+    ForteGroupTest.Models.ForteGroupTestEntities dc = new ForteGroupTest.Models.ForteGroupTestEntities();
+    
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#accordion").accordion({
+            active: false,
+            collapsible: true,
+            heightStyle: "content"
+        });
+
+        $("#dialog").dialog({
+            autoOpen: true,
+            resizable: false,
+            modal: true,
+            buttons: [
+                {
+                    text: "OK", click: function () {
+                        $("#dialog").dialog("close");
+                    }
+                }
+            ]
+        });
+    })
+</script>
+<div class="content">
+    @if (ViewBag.Message != null)
+    {
+        <div id="dialog" title="Success">
+            @ViewBag.Message
+        </div>
+    }
+    <div id="accordion">
+        @foreach (ForteGroupTest.Models.Users item in dc.Users)
+        {
+            var Note = dc.Records.Where(a => a.Users.UserId.Equals(item.UserId)).FirstOrDefault();
+            if (Note != null)
+            {
+                <h2>
+                    <a href="#">@item.Sirname @(item.Name.First()). @(item.Patername.First()).</a>
+                </h2>
+                    <div id="user-@item.UserId">
+                        @foreach (ForteGroupTest.Models.Records rec in dc.Records)
+                        {
+                            if(rec.AuthorId == item.UserId)
+                            { 
+                                <div class="record">
+                                    @if (rec.isRemoved == 1)
+                                    {
+                                        <img id="deleted-logo" src="@Url.Content("~/Content/deleted.png")" width="200" height="80"/>
+                                    }
+                                    <a href="~/Home/DeleteNoteUser?id=@rec.RecordId">
+                                        <img src="@Url.Content("~/Content/delete.png")" width="20" height="20" style="float:left; margin-right:10px;" />
+                                    </a>
+                                    <a href="~/Home/EditNoteUser?id=@rec.RecordId">
+                                        <img src="@Url.Content("~/Content/editxl.png")" width="20" height="20" style="float:left; margin-right:10px;" />
+                                    </a>
+                                    <div class="text">@rec.Content</div>
+                                    <div class="date">@rec.Date.ToShortDateString()</div>
+                                </div>
+                            }
+                        }
+                   </div>
+            }
+        }    
+    </div>
+    @if (ViewBag.Edit != null)
+    {
+        int id = ViewBag.NoteId;
+        var EditRec = dc.Records.Where(a => a.RecordId.Equals(id)).FirstOrDefault();
+
+        using (Html.BeginForm("EditNoteUser", "Home", FormMethod.Post, new { @id = "EditNoteUser-form" }))
+        {
+            <div id="Edit">
+                <h2>Edit Note</h2>
+                @model ForteGroupTest.Models.Records
+                @Html.TextArea("Content", EditRec.Content, new { cols = "60", rows = "5" })<br />
+                @Html.ValidationMessageFor(a => a.Content)<br />
+                <input type="hidden" value="@EditRec.RecordId" name="RecordId" />
+                <input type="submit" value="Save" />
+                <input type="button" value="Cancel" id="close-edit-btn" />
+            </div>
+        }
+
+    }
+</div>
+

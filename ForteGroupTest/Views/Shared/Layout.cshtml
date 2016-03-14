@@ -1,0 +1,43 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <link rel="stylesheet" href="@Url.Content("~/Content/Style.css")" type="text/css" />
+    <link rel="stylesheet" href="http://webfonts.ru/import/kobzarks.css" type="text/css" />
+    <link type="text/css" href="@Url.Content("~/Content/StylesUi/jquery-ui.css")" rel="stylesheet" />
+    <link rel="shortcut icon" href="@Url.Content("~/Content/Logo.ico")" type="image/x-icon" />
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jquery-2.2.0.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jquery-2.2.0.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jquery.validate.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jquery-ui.js")"></script>
+    <title>@ViewBag.Title</title>
+</head>
+<body>
+    <header>
+        <div class="title">
+            Your personal note helper
+        </div>
+    </header>
+    <nav class="header">
+        <div class="header-content">
+            @Session["LogedUserSirname"] @Session["LogedUserName"] @Session["LogedUserPatername"]
+            @if (Session["isAdmin"].ToString().Equals("1"))
+            {
+                <span>(admin)</span>
+            }
+        </div>
+    </nav>
+    <div class="main">
+        <nav class="menu">
+            <a href="~/Home/LoadProfile"><div>Main</div></a>
+            <a href="~/Home/CreateNote"><div>Add Note</div></a>
+            @if (Session["isAdmin"].ToString().Equals("1"))
+            {
+                <a href="~/Home/Admin"><div>Show all notes</div></a>
+            }
+            <a href="~/Home/Index"><div>Exit</div></a>
+        </nav>
+        @RenderBody()
+    </div>
+</body>
+</html>

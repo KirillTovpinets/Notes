@@ -1,0 +1,38 @@
+﻿@model ForteGroupTest.Models.UserRecord
+@{
+    ViewBag.Title = "CreateNote";
+    Layout = "~/Views/Shared/Layout.cshtml";
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.dialog').dialog({
+            resizable: false,
+            autoOpen: true,
+            modal: true,
+            buttons: [
+                {
+                    text: "OK", click: function () {
+                        $(".dialog").dialog("close");
+                    }
+                }
+            ]
+        });
+    });
+</script>
+<div class="content">
+    @Html.ValidationSummary(true)
+    @if (ViewBag.Message != null)
+    {
+        <div class="dialog" title="Success" style="display:none">
+            <span>@ViewBag.Message</span>
+        </div>
+    }
+    @using (Html.BeginForm("CreateNote", "Home", FormMethod.Post))
+    {
+        <h2>Create a new note</h2>
+        @Html.TextAreaFor(a => a.Content, new { cols = "80", rows = "5" })
+        @Html.ValidationMessageFor(a => a.Content)<br />
+        <span name="Date">@DateTime.Now.ToShortDateString()</span><br />
+        <input type="submit" value="Save" />
+    }
+</div>

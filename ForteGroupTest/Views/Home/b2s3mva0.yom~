@@ -1,0 +1,122 @@
+﻿@{
+    ViewBag.Title = "LoadProfile";
+    Layout = "~/Views/Shared/Layout.cshtml";
+    bool hasNotes = false;
+
+    List<ForteGroupTest.Models.Records> usersRecords = new List<ForteGroupTest.Models.Records>();
+    ForteGroupTest.Models.ForteGroupTestEntities dc = new ForteGroupTest.Models.ForteGroupTestEntities();
+
+    foreach (ForteGroupTest.Models.Records item in dc.Records)
+    {
+        if (item.Users.UserId == Convert.ToInt32(Session["LogedUserId"]))
+        {
+            usersRecords.Add(item);
+        }
+    }
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#close-btn").click(function () {
+            $(".wrapper").hide();
+        });
+
+        $("#close-edit-btn").click(function () {
+            $("#EditNoteUser-form").hide();
+        });
+
+        $("#dialog").dialog({
+            modal: true,
+            resizable: false,
+            buttons: [
+                {text: "Ok", click: function(){
+                    $.ajax({
+                        type: "POST",
+                        url: "~/Home/ConfirmDelete",
+                        success: Response,
+                        error: function(e, jqxhr, errorMsg){
+                            $("<div></div>").text(errorMsg);
+                    }
+                    });
+                }
+                },
+                {
+                    text: "Cancel", click: function () {
+                        $("#dialog").dialog("close");
+                    }
+                }
+            ]
+        })
+
+        function Response() {
+            $("#dialog").dialog("close");
+            $('<div id="server-answer" title="answer">Your note delete from the system</div>').appendTo(".content");
+            $("#server-answer").dialog({
+                autoOpen: true,
+                modal: true,
+                resizable: false,
+                buttons: [
+                    {
+                        text: "OK", click: function () {
+                            $("#server-answer").dialog("close");
+                        }
+                    }
+                ]
+            });
+        }
+    })
+</script>
+@if (ViewBag.Message != null)
+{
+     <div id="dialog" title="Notification">
+            <p>Administrators of the system decided to remove some of your notes. They are the following:</p>
+            <div class="userNotes">@ViewBag.Message</div>
+            <p>Do you agree to remove this notes from the system?</p>
+    </div>
+            }
+}
+<div class="content">
+    @foreach (ForteGroupTest.Models.Records item in usersRecords)
+    {
+        hasNotes = true;
+        if (item.isRemoved == 1)
+        {
+            continue;
+        }
+        <div class="record">
+            <a href="~/Home/DeleteNoteUser?id=@item.RecordId">
+                <img src="@Url.Content("~/Content/delete.png")" width="20" height="20" style="float:left; margin-right:10px;" />
+            </a>
+            <a href="~/Home/EditNoteUser?id=@item.RecordId">
+                <img src="@Url.Content("~/Content/editxl.png")" width="20" height="20" style="float:left; margin-right:10px;" />
+            </a>
+            <div class="text">
+                @item.Content
+            </div>
+            <div class="date">@item.Date.ToShortDateString()</div>
+        </div>
+    }
+    @if (ViewBag.Edit != null)
+    {
+        int id = ViewBag.NoteId;
+        var EditRec = dc.Records.Where(a => a.RecordId.Equals(id)).FirstOrDefault();
+        
+            using (Html.BeginForm("EditNoteUser", "Home", FormMethod.Post, new { @id="EditNoteUser-form"}))
+            {
+                <div id="Edit">
+                    <h2>Edit Note</h2>
+                    @model ForteGroupTest.Models.Records
+                    @Html.TextArea("Content", EditRec.Content, new { cols = "60", rows = "5" })<br />
+                    @Html.ValidationMessageFor(a => a.Content)<br />
+                    <input type="hidden" value="@EditRec.RecordId" name="RecordId" />
+                    <input type="submit" value="Save" />
+                    <input type="button" value="Cancel" id="close-edit-btn"/>
+                </div>
+            }
+
+    }
+    @if (!hasNotes)
+    {
+        <div>You haven't got any notes</div>
+    }
+</div>

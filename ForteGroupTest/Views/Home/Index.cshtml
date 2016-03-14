@@ -1,0 +1,84 @@
+﻿@model ForteGroupTest.Models.LogedUser
+@{
+    ViewBag.Title = "Sign in";
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/Style.css")" type="text/css" />
+    <link rel="stylesheet" href="http://webfonts.ru/import/kobzarks.css" type="text/css" />
+    <link type="text/css" href="@Url.Content("~/Content/StylesUi/jquery-ui.css")" rel="stylesheet" />
+    <link rel="shortcut icon" href="@Url.Content("~/Content/Logo.ico")" type="image/x-icon" />
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jquery-2.2.0.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jquery-2.2.0.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jquery.validate.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jquery-ui.js")"></script>
+    <title>@ViewBag.Title</title>
+</head>
+<body>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var canClose = false;
+            var delay = 15;
+            $("#dial-authorisation").dialog({
+                resizable: false,
+                modal: true,
+                autoOpen: true,
+                beforeClose: function () {
+                    return canClose;
+                },
+                open: function () {
+                    var count = delay;
+                    var intID = setInterval(function () {
+                        count--;
+                        $('#time').text(count);
+                        if (count == 0) {
+                            clearInterval(intID);
+                            canClose = true;
+                            $("#dial-authorisation").dialog("close");
+                        }
+                    }, 1000);
+                }
+            })
+        });
+    </script>
+    <header>
+        <div class="title">
+            Your personal note helper
+        </div>
+    </header>
+    <nav class="header">
+        <div class="header-content">
+            Authorisation
+        </div>
+    </nav>
+    @using (Html.BeginForm("Index", "Home", FormMethod.Post, new { id = "login-form" }))
+    {
+        @Html.ValidationSummary(true)
+        if (ViewBag.Message != null)
+        {
+            <div id="dial-authorisation" title="Error" style="display:none">
+                @ViewBag.Message. Please try again in <span id="time">15</span> seconds
+            </div>
+        }
+        <table>
+            <tr>
+                <td><label for="login">Login:</label></td>
+                <td>@Html.TextBoxFor(a => a.Login)</td>
+                <td style="color:red;">@Html.ValidationMessageFor(a => a.Login)</td>
+            </tr>
+            <tr>
+                <td><label for="password">Password:</label></td>
+                <td>@Html.PasswordFor(a => a.Password)</td>
+                <td style="color:red;">@Html.ValidationMessageFor(a => a.Password)</td>
+            </tr>
+        </table>
+        <div class="buttons">
+            <input type="submit" value="Sign in" />
+            <a href="~/Home/Register"><input type="button" value="Sign up" /></a>
+        </div>
+    }
+</body>
+</html>

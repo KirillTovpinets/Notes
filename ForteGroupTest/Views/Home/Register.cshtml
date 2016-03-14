@@ -1,0 +1,107 @@
+﻿@model ForteGroupTest.Models.RegUser
+@{
+    ViewBag.Title = "Register";
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <link rel="stylesheet" href="@Url.Content("~/Content/Style.css")" type="text/css" />
+    <link type="text/css" href="@Url.Content("~/Content/StylesUi/jquery-ui.css")" rel="stylesheet" />
+    <link rel="shortcut icon" href="@Url.Content("~/Content/Logo.ico")" type="image/x-icon" />
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jquery-2.2.0.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jquery-ui.js")"></script>
+    <title>@ViewBag.Title</title>
+</head>
+<body>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('form').validate({
+                highlight: function (element, errorClass) {
+                    $(element).css("border", "2px solid red");
+                },
+                unhighlight: function (element, errorClass) {
+                    $(element).css({
+                        "border": "none",
+                        "border-bottom": "1px solid black"
+                    });
+                },
+                errorElement: "div",
+                errorContainer: '#error'
+            })
+
+            $("#dial-reg").dialog({
+                resizable: false,
+                modal: true,
+                buttons: {
+                    text: "ОК", click: function () {
+                        $(this).dialog("close");
+                    }
+                }
+            });
+        });
+    </script>
+    <nav class="header">
+        <div class="header-content"> Регистрация</div>
+    </nav>
+    @using (Html.BeginForm("Register", "Home", FormMethod.Post, new { id = "register-form" }))
+    {
+        @Html.ValidationSummary(true)
+        if (ViewBag.Message != null)
+        {
+            <div id="dial-reg" title="Register">
+                @ViewBag.Message
+            </div>
+        }
+        <table>
+            <tr>
+                <td><lable>Login:</lable></td>
+                <td>@Html.TextBoxFor(a => a.Login, new { @id = "user-login" })</td>
+                <td style="color:red;">@Html.ValidationMessageFor(a => a.Login)</td>
+            </tr>
+            <tr>
+                <td><div id="key">*Key:</div></td>
+                <td>@Html.PasswordFor(a => a.AdminKey)</td>
+                <td>@Html.ValidationMessageFor(a => a.AdminKey)</td>
+            </tr>
+            <tr>
+                <td><lable>Password:</lable></td>
+                <td>@Html.PasswordFor(a => a.Password)</td>
+                <td style="color:red;">@Html.ValidationMessageFor(a => a.Password)</td>
+            </tr>
+            <tr>
+                <td><lable>Confirm:</lable></td>
+                <td>@Html.PasswordFor(a => a.ConfirmPassword)</td>
+                <td style="color:red;">@Html.ValidationMessageFor(a => a.ConfirmPassword)</td>
+            </tr>
+            <tr>
+                <td><lable>Name:</lable></td>
+                <td>@Html.TextBoxFor(a => a.Name)</td>
+                <td style="color:red;">@Html.ValidationMessageFor(a => a.Name)</td>
+            </tr>
+            <tr>
+                <td><lable>Sirname:</lable></td>
+                <td>@Html.TextBoxFor(a => a.Sirname)</td>
+                <td style="color:red;">@Html.ValidationMessageFor(a => a.Sirname)</td>
+            </tr>
+            <tr>
+                <td><lable>Patername:</lable></td>
+                <td>@Html.TextBoxFor(a => a.Patername)</td>
+                <td style="color:red;">@Html.ValidationMessageFor(a => a.Patername)</td>
+            </tr>
+        </table>
+        <div id="key-info">
+            If you are not an admin of the system simply keep this field empty
+        </div>
+        <div style="margin-top:10px;">
+            <img src="@Url.Action("Captcha","Home")" /><br />
+            @Html.TextBoxFor(a => a.Captcha, new { @placeholder = "Enter a number from captcha" })
+            <label style="color:red;">@Html.ValidationMessageFor(a => a.Captcha)</label>
+        </div>
+        <div>
+            <input type="submit" value="Register" />
+            <a href="~/Home/Index"><input type="button" value="Back" /></a>
+        </div>
+    }
+</body>
+</html>

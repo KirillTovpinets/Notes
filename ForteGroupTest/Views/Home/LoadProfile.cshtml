@@ -1,0 +1,20 @@
+﻿@{
+    ViewBag.Title = "LoadProfile";
+    Layout = "~/Views/Shared/Layout.cshtml";
+    ForteGroupTest.Models.ForteGroupTestEntities dc = new ForteGroupTest.Models.ForteGroupTestEntities();
+}
+
+<div class="content">
+    @foreach (ForteGroupTest.Models.Records item in dc.Records)
+    {
+        if (item.AuthorId == Convert.ToInt32(Session["LogedUserId"]))
+        {
+            <div class="record">
+                <div class="text">
+                    @item.Content
+                </div>
+                <div class="date">@item.Date.ToShortDateString()</div>
+            </div>
+        }
+    }
+</div>
