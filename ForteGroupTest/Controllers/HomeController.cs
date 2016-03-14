@@ -214,6 +214,7 @@ namespace ForteGroupTest.Controllers
         }
 
         [HttpPost]
+        //Axaj function
         public ActionResult ConfirmDelete()
         {
             ForteGroupTestEntities dc = new ForteGroupTestEntities();

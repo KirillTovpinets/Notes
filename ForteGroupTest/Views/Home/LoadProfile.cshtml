@@ -2,19 +2,75 @@
     ViewBag.Title = "LoadProfile";
     Layout = "~/Views/Shared/Layout.cshtml";
     ForteGroupTest.Models.ForteGroupTestEntities dc = new ForteGroupTest.Models.ForteGroupTestEntities();
+    bool hasNote = false;
 }
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#dialog").dialog({
+            modal: true,
+            resizable: false,
+            autoOpen: true,
+            buttons: [
+                { text: "OK", click: Confirm },
+                { text: "Cansel", click: function () { $("#dialog").dialog("close"); } }
+            ]
+        });
 
+        function Confirm() {
+            $.ajax({
+                type: "POST",
+                url: "~/Home/ConfirmDelete",
+                success: function () {
+                    $("<div id='success' title='Sucess'>The note was successfuly deleted from the system</div>").appendTo(".content");
+                    $("#success").dialog({
+                        modal: true,
+                        resizable: false,
+                        autoOpen: true,
+                        buttons: [
+                            {
+                                text: "OK",
+                                click: function () {
+                                    $("#success").dialog("close");
+                                }
+                            }
+                        ]
+                    })
+                }
+            })
+        }
+    });
+</script>
 <div class="content">
     @foreach (ForteGroupTest.Models.Records item in dc.Records)
     {
-        if (item.AuthorId == Convert.ToInt32(Session["LogedUserId"]))
+        if (item.AuthorId == Convert.ToInt32(Session["LogedUserId"]) && 
+            item.isRemoved != 1)
         {
+            hasNote = true;
             <div class="record">
+                <a href="~/Home/DeleteNoteUser?id=@item.RecordId">
+                    <img src="@Url.Content("~/Content/delete.png")" width="20" height="20" style="float:left; margin-right:10px;" />
+                </a>
+                <a href="~/Home/EditNoteUser?id=@item.RecordId">
+                    <img src="@Url.Content("~/Content/editxl.png")" width="20" height="20" style="float:left; margin-right:10px;" />
+                </a>
                 <div class="text">
                     @item.Content
                 </div>
                 <div class="date">@item.Date.ToShortDateString()</div>
             </div>
         }
+    }
+    @if (!hasNote)
+    {
+        <p>You haven't got any notes</p>
+    }
+    @if (ViewBag.Message != null)
+    {
+        <div id="dialog" title="Notification">
+            <p>Administrators of the system decided to delete some of your notes. They are the following:</p>
+            @ViewBag.Message
+            Do you agree to delete these notes?
+        </div>
     }
 </div>
